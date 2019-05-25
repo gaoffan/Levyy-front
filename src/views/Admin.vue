@@ -26,6 +26,10 @@
                 </v-list-tile>
             </v-list>
         </v-card>
+        <div class="text-xs-center">
+            <v-btn dark color="red" @click="signout"><v-icon>exit_to_app</v-icon>退出登录</v-btn>
+        </div>
+
     </v-flex>
 </template>
 
@@ -41,7 +45,34 @@
             }
         },
         created(){
-            console.log("233")
+            let router = this.$router;
+            let ajax = new XMLHttpRequest()
+            ajax.open("GET","http://127.0.0.1:8080/api/auth/issignin",true)
+            ajax.onload = function() {
+                if (ajax.readyState == 4 && ajax.status == 200) {
+                    let result = JSON.parse(ajax.responseText)
+                    if (result.ret == 1999)
+                        router.push('/signin')
+                }
+            }
+            ajax.withCredentials = true
+            ajax.send()
+        },
+        methods:{
+            signout(){
+                let router = this.$router;
+                let ajax = new XMLHttpRequest()
+                ajax.open("GET","http://127.0.0.1:8080/api/signout",true)
+                ajax.onload = function() {
+                    if (ajax.readyState == 4 && ajax.status == 200) {
+                        let result = JSON.parse(ajax.responseText)
+                        if (result.ret == 200)
+                            router.push('/signin')
+                    }
+                }
+                ajax.withCredentials = true
+                ajax.send()
+            }
         }
     }
 </script>

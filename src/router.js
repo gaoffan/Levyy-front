@@ -31,12 +31,12 @@ export default new Router({
             component: () => import('./views/NewHomework.vue')
         },
         {
-            path: '/login',
-            name: 'login',
+            path: '/signin',
+            name: 'signin',
             // route level code-splitting
             // this generates a separate chunk (about.[hash].js) for this route
             // which is lazy-loaded when the route is visited.
-            component: () => import('./views/Login.vue')
+            component: () => import('./views/SignIn.vue')
         },
         {
             path: '/admin',
