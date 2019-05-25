@@ -21,7 +21,7 @@
                 <v-spacer></v-spacer>
 
                 <v-card-title class="">
-                    <div class="display-1">Homework {{hid}}</div>
+                    <div class="display-1">{{hwData.name}}</div>
                 </v-card-title>
             </v-layout>
             <v-divider></v-divider>
@@ -31,7 +31,7 @@
                         <v-icon color="#448AFF">alarm</v-icon>
                     </v-list-tile-action>
                     <v-list-tile-content>
-                        <v-list-tile-title>2019-5-26</v-list-tile-title>
+                        <v-list-tile-title>{{hwData.deadline}}</v-list-tile-title>
                         <v-list-tile-sub-title>截止时间</v-list-tile-sub-title>
                     </v-list-tile-content>
                 </v-list-tile>
@@ -41,8 +41,8 @@
                         <v-icon color="#448AFF">assignment_ind</v-icon>
                     </v-list-tile-action>
                     <v-list-tile-content>
-                        <v-list-tile-title>ABC</v-list-tile-title>
-                        <v-list-tile-sub-title>发布于 3天前</v-list-tile-sub-title>
+                        <v-list-tile-title>{{hwData.owner}}</v-list-tile-title>
+                        <v-list-tile-sub-title>发布于 {{hwData.createDate}}</v-list-tile-sub-title>
                     </v-list-tile-content>
                 </v-list-tile>
 
@@ -51,7 +51,7 @@
                         <v-icon color="#448AFF">attachment</v-icon>
                     </v-list-tile-action>
                     <v-list-tile-content>
-                        <v-list-tile-title>doc,docx</v-list-tile-title>
+                        <v-list-tile-title>{{hwData.format}}</v-list-tile-title>
                         <v-list-tile-sub-title>支持的格式</v-list-tile-sub-title>
                     </v-list-tile-content>
                 </v-list-tile>
@@ -61,7 +61,7 @@
                         <v-icon color="#448AFF">supervisor_account</v-icon>
                     </v-list-tile-action>
                     <v-list-tile-content>
-                        <v-list-tile-title>1/99</v-list-tile-title>
+                        <v-list-tile-title>{{hwData.count}}/{{hwData.sLimit}}</v-list-tile-title>
                         <v-list-tile-sub-title>已收/应收</v-list-tile-sub-title>
                     </v-list-tile-content>
                 </v-list-tile>
@@ -108,6 +108,15 @@
             return {
                 user: "",
                 password: "",
+                hwData: {
+                    name:"",
+                    createDate:null,
+                    deadline:null,
+                    owner:"",
+                    format:"",
+                    count:0,
+                    sLimit:0
+                }
             }
         },
         props: ['hid'],
@@ -121,6 +130,29 @@
             del(){
 
             }
+        },
+        created(){
+            let hid = this.hid
+            let hwd = this.hwData
+            let ajax = new XMLHttpRequest()
+            ajax.open("GET","http://127.0.0.1:8080/api/get/" + hid,true)
+            ajax.onload = function() {
+                if (ajax.readyState == 4 && ajax.status == 200) {
+                    let result = JSON.parse(ajax.responseText)
+                    if (result.ret == 200){
+                        result = result.data
+                        hwd.name = result.name
+                        hwd.deadline = new Date(result.deadline).Format("yyyy-MM-dd HH:mm:ss")
+                        hwd.sLimit = result.submissionLimit
+                        hwd.owner = result.owner
+                        hwd.format = result.supportType
+                        hwd.createDate = new Date(result.createDate).Format("yyyy-MM-dd HH:mm:ss")
+                    }
+                    console.log(result)
+
+                }
+            }
+            ajax.send()
         }
     }
 </script>
