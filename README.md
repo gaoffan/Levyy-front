@@ -1,4 +1,5 @@
-# homeworkupload-front
+# Levy-front
+Levy | 一个交电子版作业的平台
 
 ## Project setup
 ```
@@ -27,3 +28,5 @@ yarn run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+
