@@ -12,6 +12,11 @@
             <v-list-tile-sub-title>{{ item.subtitle }}</v-list-tile-sub-title>
           </v-list-tile-content>
         </v-list-tile>
+        <v-list-tile v-if="items.length === 0">
+          <v-list-tile-content>
+          <v-list-tile-title>这里空空如也</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
       </v-list>
       <v-subheader>不会显示已截止超过 3 天的作业</v-subheader>
     </v-card>
