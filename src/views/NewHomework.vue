@@ -4,6 +4,9 @@
             <v-card-title>
                 <div class="headline">新增作业</div>
             </v-card-title>
+            <v-alert :value="ret.show" type="error" color="red">
+                {{ ret.resultText }}
+            </v-alert>
             <v-card-text>
                 <v-form>
                     <v-text-field v-model="name" label="作业名称" required box></v-text-field>
@@ -15,7 +18,7 @@
                 </v-form>
             </v-card-text>
             <v-card-actions>
-                <v-btn flat color="red">确定</v-btn>
+                <v-btn flat color="red" @click="submit">确定</v-btn>
             </v-card-actions>
         </v-card>
     </v-flex>
@@ -31,13 +34,42 @@
                 sLimit: "",
                 fnExample: "",
                 deadline: "",
-                fnRegExp: ""
+                fnRegExp: "",
+                ret: {
+                    show :false,
+                    resultText: ""
+                }
             }
         },
         methods:{
             submit(){
-
+                let router = this.$router;
+                let ret = this.ret;
+                let formData = new FormData();
+                formData.set('name', this.name);
+                formData.set('fnFormat', this.fnFormat);
+                formData.set('sLimit', this.sLimit);
+                formData.set('fnExample', this.fnExample);
+                formData.set('deadline', this.deadline);
+                formData.set('fnRegExp', this.fnRegExp);
+                formData.set('stype', this.fnFormat);
+                this.$doAjax('POST',"/api/auth/newhomework", function (result) {
+                    // console.log(result);
+                    if (result.ret === 200)
+                        router.push({ name: 'detail', params: { hid: result.data }});
+                    else{
+                        ret.resultText = result.desc;
+                        ret.show = true;
+                    }
+                },formData);
             }
+        },
+        created() {
+            let router = this.$router;
+            this.$isSignIn(function (result) {
+                if (result.ret !== 200)
+                    router.push('/signin');
+            })
         }
     }
 </script>
