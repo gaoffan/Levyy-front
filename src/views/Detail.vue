@@ -72,7 +72,7 @@
                         <v-text-field v-model="user" label="你是？" required></v-text-field>
                     </v-list-tile>
                     <v-list-tile>
-                        <v-text-field v-model="password" label="密码（确保第二次提交时身份相同）" required></v-text-field>
+                        <v-text-field v-model="password" label="密码（确保第二次提交身份相同）" required></v-text-field>
                     </v-list-tile>
                     <v-list-tile>
                         <div class="upload-box" @click="doUpload">
