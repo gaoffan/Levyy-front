@@ -3,7 +3,7 @@
     <v-card>
       <v-list two-line subheader>
         <v-subheader inset>作业列表</v-subheader>
-        <v-list-tile v-for="item in items"  :key="item.id" avatar @click="viewHomework(item.hid)">
+        <v-list-tile v-for="item in items"  :key="item.hid" avatar @click="viewHomework(item.hid)">
           <v-list-tile-avatar>
             <v-icon class="blue lighten-1 white--text">{{ item.icon }}</v-icon>
           </v-list-tile-avatar>
@@ -18,7 +18,7 @@
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
-      <v-subheader>不会显示已截止超过 3 天的作业</v-subheader>
+      <v-subheader>不会显示已截止超过 7 天的作业</v-subheader>
     </v-card>
   </v-flex>
 </template>

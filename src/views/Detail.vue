@@ -32,7 +32,7 @@
                     </v-list-tile-action>
                     <v-list-tile-content>
                         <v-list-tile-title>{{hwData.deadline}}</v-list-tile-title>
-                        <v-list-tile-sub-title>截止时间</v-list-tile-sub-title>
+                        <v-list-tile-sub-title>{{hwData.deadline_format}} 截止</v-list-tile-sub-title>
                     </v-list-tile-content>
                 </v-list-tile>
 
@@ -106,11 +106,13 @@
                                 <v-list-tile-content>{{item.name}}</v-list-tile-content>
                                 <v-list-tile-content class="align-end">{{item.time}}</v-list-tile-content>
                             </v-list-tile>
+                            <v-list-tile v-if="hwData.submitted.length === 0">
+                                <v-list-tile-content class="align-center">当第一个提交的人吧～</v-list-tile-content>
+                            </v-list-tile>
                         </v-list>
                     </v-card>
                 </v-expansion-panel-content>
             </v-expansion-panel>
-
         </v-card>
     </v-flex>
 </template>
@@ -129,6 +131,7 @@
                     sLimit:0,
                     owner:"",
                     format:"",
+                    deadline_format:null,
                     count:0,
                     submitted:[]
                 },
@@ -195,19 +198,20 @@
                 if (result.ret === 200){
                     result = result.data;
                     hwd.name = result.name;
-                    hwd.deadline = new Date(result.deadline).Format("yyyy-MM-dd HH:mm:ss");
+                    hwd.deadline = new Date(result.deadline).Format("yyyy-MM-dd HH:mm");
                     hwd.sLimit = result.sLimit;
                     hwd.owner = result.owner;
                     hwd.format = result.format;
-                    hwd.createDate = new Date(result.createDate).Format("yyyy-MM-dd HH:mm:ss");
+                    hwd.createDate = new Date(result.createDate).Format("yyyy-MM-dd HH:mm");
                     hwd.count = result.count;
+                    hwd.deadline_format = result.deadline_format;
                     // console.log(result.submitted);
-                    for (let item of result.submitted){
+                    result.submitted.map(function (item) {
                         hwd.submitted.push({
                             name:item.name,
-                            time:new Date(item.time).Format("yyyy-MM-dd HH:mm:ss")
+                            time:new Date(item.time).Format("yyyy-MM-dd HH:mm")
                         });
-                    }
+                    });
                 }
             });
             let show = this.show;

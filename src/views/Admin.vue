@@ -8,18 +8,13 @@
             <v-list two-line subheader>
                 <v-subheader inset>我发布的作业</v-subheader>
 
-                <v-list-tile
-                        v-for="item in items"
-                        :key="item.title"
-                        avatar
-                        @click=""
-                >
+                <v-list-tile v-for="item in items" :key="item.hid" avatar @click="viewHomework(item.hid)">
                     <v-list-tile-avatar>
-                        <v-icon :class="[item.iconClass]">{{ item.icon }}</v-icon>
+                        <v-icon class="grey lighten-1 white--text">{{ item.icon }}</v-icon>
                     </v-list-tile-avatar>
 
                     <v-list-tile-content>
-                        <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                        <v-list-tile-title>{{ item.name }}</v-list-tile-title>
                         <v-list-tile-sub-title>{{ item.subtitle }}</v-list-tile-sub-title>
                     </v-list-tile-content>
 
@@ -38,40 +33,38 @@
         name: 'Admin',
         data(){
             return {
-                items: [
-                    { icon: 'A', iconClass: 'blue lighten-1 white--text', title: 'C++ Homework', subtitle: 'ABC - 3 天后截止' },
-                    { icon: 'B', iconClass: 'grey lighten-1 white--text', title: 'Recipes', subtitle: 'Jan 17, 2014' },
-                ]
+                items: []
             }
         },
         created(){
             let router = this.$router;
-            let ajax = new XMLHttpRequest()
-            ajax.open("GET","http://127.0.0.1:8080/api/auth/issignin",true)
-            ajax.onload = function() {
-                if (ajax.readyState == 4 && ajax.status == 200) {
-                    let result = JSON.parse(ajax.responseText)
-                    if (result.ret == 1999)
-                        router.push('/signin')
-                }
-            }
-            ajax.withCredentials = true
-            ajax.send()
+            this.$isSignIn(function (result) {
+                if (result.ret !== 200)
+                    router.push('/signin');
+            });
+            let items = this.items;
+            this.$doAjax("GET","/api/auth/getlist",function (result) {
+                console.log(result);
+                result.data.map(function(item){
+                    items.push({
+                        hid: item.id,
+                        icon: item.name[0],
+                        name: item.name,
+                        subtitle: "发布于 " + new Date(item.createDate).Format("yyyy-MM-dd HH:mm"),
+                    });
+                })
+            });
         },
         methods:{
+            viewHomework(hid){
+                this.$router.push({ name: 'detail', params: { hid: hid }})
+            },
             signout(){
                 let router = this.$router;
-                let ajax = new XMLHttpRequest()
-                ajax.open("GET","http://127.0.0.1:8080/api/signout",true)
-                ajax.onload = function() {
-                    if (ajax.readyState == 4 && ajax.status == 200) {
-                        let result = JSON.parse(ajax.responseText)
-                        if (result.ret == 200)
-                            router.push('/signin')
-                    }
-                }
-                ajax.withCredentials = true
-                ajax.send()
+                this.$doAjax("GET","/api/signout",function (result) {
+                    if (result.ret === 200)
+                        router.push('/signin');
+                });
             }
         }
     }

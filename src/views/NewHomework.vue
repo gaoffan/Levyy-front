@@ -18,6 +18,7 @@
                 </v-form>
             </v-card-text>
             <v-card-actions>
+                <v-spacer></v-spacer>
                 <v-btn flat color="red" @click="submit">确定</v-btn>
             </v-card-actions>
         </v-card>

@@ -56,7 +56,7 @@
             this.$isSignIn(function (result) {
                 if (result.ret !== 1999)
                     router.push('/');
-            })
+            });
         }
     }
 </script>

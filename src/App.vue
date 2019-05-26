@@ -17,7 +17,7 @@
             </v-container>
         </v-content>
         <v-footer dark app color = "#2196F3" class="justify-center">
-            &copy;2019 Levy —  一个交电子版作业的平台 <strong>Gou Faan</strong>
+            &copy;2019 Levy | 一个交电子版作业的平台 <strong> Gou Faan</strong>
         </v-footer>
     </div>
 </template>
