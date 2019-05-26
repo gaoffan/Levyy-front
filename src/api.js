@@ -1,4 +1,4 @@
-const CONFIG = {
+export const CONFIG = {
     apiUrl: "http://127.0.0.1:8080"
 };
 
@@ -21,7 +21,7 @@ Date.prototype.Format = function(fmt)
     return fmt;
 };
 
-export function doAjax(method = "GET",url,func) {
+export function doAjax(method, url, func, formData) {
     let ajax = new XMLHttpRequest();
     ajax.open(method, CONFIG.apiUrl + url, true);
     ajax.onload = function () {
@@ -31,7 +31,7 @@ export function doAjax(method = "GET",url,func) {
         }
     };
     ajax.withCredentials = true;
-    ajax.send();
+    ajax.send(formData);
 }
 
 export function isSignIn(action) {
