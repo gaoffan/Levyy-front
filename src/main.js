@@ -8,11 +8,11 @@ import 'vuetify/dist/vuetify.min.css' // Ensure you are using css-loader
 import 'material-design-icons-iconfont/dist/material-design-icons.css';
 import './api'
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
-Vue.use(Vuetify)
+Vue.use(Vuetify);
 
 new Vue({
   router,
   render: h => h(App)
-}).$mount('#app')
+}).$mount('#app');
