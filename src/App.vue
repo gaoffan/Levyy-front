@@ -5,15 +5,12 @@
             <v-toolbar-title>Levy</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-toolbar-items>
-                <v-btn flat to="/admin">管理面板</v-btn>
-                <v-btn flat to="/newhomework">FAQ</v-btn>
+                <v-btn flat to="/admin">管理员</v-btn>
             </v-toolbar-items>
         </v-toolbar>
         <v-content>
             <v-container fluid>
-                <v-layout row align-center justify-center>
-                    <router-view/>
-                </v-layout>
+                <router-view/>
             </v-container>
         </v-content>
         <v-footer dark app color = "#2196F3" class="justify-center">
@@ -21,11 +18,3 @@
         </v-footer>
     </div>
 </template>
-
-<script>
-
-</script>
-
-<style>
-
-</style>
