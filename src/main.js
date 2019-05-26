@@ -6,11 +6,13 @@ import Vuetify from 'vuetify'
 // index.js or main.js
 import 'vuetify/dist/vuetify.min.css' // Ensure you are using css-loader
 import 'material-design-icons-iconfont/dist/material-design-icons.css';
-import './api'
+import {doAjax,isSignIn} from'./api'
 
 Vue.config.productionTip = false;
 
 Vue.use(Vuetify);
+Object.defineProperty(Vue.prototype, '$doAjax', { value: doAjax });
+Object.defineProperty(Vue.prototype, '$isSignIn', { value: isSignIn });
 
 new Vue({
   router,

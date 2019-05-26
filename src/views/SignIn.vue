@@ -1,9 +1,12 @@
 <template>
     <v-flex xs12 sm10 md6 lg5 xl4>
         <v-card>
-            <v-card-title>
-                <div class="headline">登录到 Levy</div>
-            </v-card-title>
+            <v-alert :value="ret.show" type="error" color="red">
+                {{ ret.resultText }}
+            </v-alert>
+            <v-toolbar dark color="#64B5F6">
+                <v-toolbar-title>登录到 Levy</v-toolbar-title>
+            </v-toolbar>
             <v-card-text>
                 <v-form>
                     <v-text-field v-model="userName" label="账号" required box></v-text-field>
@@ -11,6 +14,7 @@
                 </v-form>
             </v-card-text>
             <v-card-actions>
+                <v-spacer></v-spacer>
                 <v-btn dark color="red" @click="login">登录</v-btn>
             </v-card-actions>
         </v-card>
@@ -21,42 +25,36 @@
     export default {
         name: "signin",
         data() {
-            return{
+            return {
                 userName:"",
-                password:""
+                password:"",
+                ret: {
+                    show :false,
+                    resultText: ""
+                }
             }
         },
         methods:{
             login(){
                 let router = this.$router;
-                let ajax = new XMLHttpRequest()
-                ajax.open("GET","http://127.0.0.1:8080/api/signin?userName=" + this.userName + "&password=" +  this.password, true)
-                ajax.onload = function() {
-                    if (ajax.readyState == 4 && ajax.status == 200) {
-                        let result = JSON.parse(ajax.responseText)
-                        console.log(result)
-                        if (result.ret == 200)
-                            router.go(-1)
+                let ret = this.ret;
+                this.$doAjax('POST',"/api/signin?userName=" + this.userName + "&password=" +  this.password, function (result) {
+                    if (result.ret === 200)
+                        router.go(-1);
+                    else{
+                        ret.resultText = result.desc;
+                        ret.show = true;
                     }
-                }
-                ajax.withCredentials = true
-                ajax.send()
+                });
+
             }
         },
         created(){
             let router = this.$router;
-            let ajax = new XMLHttpRequest()
-            ajax.open("GET","http://127.0.0.1:8080/api/auth/issignin",true)
-            ajax.onload = function() {
-                if (ajax.readyState == 4 && ajax.status == 200) {
-                    let result = JSON.parse(ajax.responseText)
-                    console.log(result)
-                    if (result.ret != 1999)
-                        router.push('/')
-                }
-            }
-            ajax.withCredentials = true
-            ajax.send()
+            this.$isSignIn(function (result) {
+                if (result.ret !== 1999)
+                    router.push('/');
+            })
         }
     }
 </script>
