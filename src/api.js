@@ -1,5 +1,5 @@
 export const CONFIG = {
-    apiUrl: "http://127.0.0.1:8080"
+    apiUrl: "/homeworkupload"
 };
 
 Date.prototype.Format = function(fmt)
