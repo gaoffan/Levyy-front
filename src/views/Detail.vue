@@ -172,13 +172,18 @@
                     this.showInfo("请不要皮这个系统（没有选择文件）","orange","warning");
                     return;
                 }
-                formData.set('file', [0], document.getElementById("input_upload").files[0].name);
+                formData.set('file', files[0], files[0].name);
                 this.$doAjax("POST","/api/submit", (result) => {
                     this.showInfo(result.desc, result.ret === 200 ? "green" : "red", result.ret === 200 ? "success" : "error");
                 }, formData);
             },
             downloadMe(){
-
+                this.$doAjax("POST","/api/candownloadsubmission?hid=" + this.hid + "&user=" + this.user + "&password=" + this.password, (result) => {
+                    if (result.ret !== 200)
+                        this.showInfo(result.desc);
+                    else
+                        location.href = this.$CONFIG.apiUrl +  "/api/downloadsubmission?hid=" + this.hid + "&user="+ this.user + "&password=" + this.password;
+                });
             },
             inputChanged(){
                 this.file_info = document.getElementById('input_upload').files[0].name;
@@ -208,33 +213,30 @@
             }
         },
         created(){
-            let hid = this.hid;
-            let hwd = this.hwData;
-            this.$doAjax("GET","/api/get/" + hid,function (result) {
+            this.$doAjax("GET","/api/get/" + this.hid, (result) => {
                 if (result.ret === 200){
                     result = result.data;
-                    hwd.name = result.name;
-                    hwd.deadline = new Date(result.deadline).Format("yyyy-MM-dd HH:mm");
-                    hwd.sLimit = result.sLimit;
-                    hwd.owner = result.owner;
-                    hwd.format = result.format;
-                    hwd.createDate = new Date(result.createDate).Format("yyyy-MM-dd HH:mm");
-                    hwd.count = result.count;
-                    hwd.fnExample = result.fnExample;
-                    hwd.deadline_format = result.deadline_format;
-                    // console.log(result.submitted);
-                    result.submitted.map(function (item) {
-                        hwd.submitted.push({
-                            name:item.name,
-                            time:new Date(item.time).Format("yyyy-MM-dd HH:mm")
-                        });
+                    this.hwData.name = result.name;
+                    this.hwData.deadline = new Date(result.deadline).Format("yyyy-MM-dd HH:mm");
+                    this.hwData.sLimit = result.sLimit;
+                    this.hwData.owner = result.owner;
+                    this.hwData.format = result.format;
+                    this.hwData.createDate = new Date(result.createDate).Format("yyyy-MM-dd HH:mm");
+                    this.hwData.count = result.count;
+                    this.hwData.fnExample = result.fnExample;
+                    this.hwData.deadline_format = result.deadline_format;
+                    if (result.submitted)
+                        result.submitted.map((item) => {
+                            this.hwData.submitted.push({
+                                name:item.name,
+                                time:new Date(item.time).Format("yyyy-MM-dd HH:mm")
+                            });
                     });
                 }
             });
-            let show = this.show;
-            this.$doAjax("GET","/api/auth/ismyhomework?hid=" + hid,function (result) {
+            this.$doAjax("GET","/api/auth/ismyhomework?hid=" + this.hid, (result) => {
                 if (result.ret === 200 && result.data)
-                    show();
+                    this.show();
             });
         }
     }
