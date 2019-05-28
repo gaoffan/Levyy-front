@@ -38,22 +38,21 @@
             }
         },
         created(){
-            let router = this.$router;
-            this.$isSignIn(function (result) {
+            this.$isSignIn((result) => {
                 if (result.ret !== 200)
-                    router.push('/signin');
+                    this.$router.push('/signin');
             });
-            let items = this.items;
-            this.$doAjax("GET","/api/auth/getlist",function (result) {
-                console.log(result);
-                result.data.map(function(item){
-                    items.push({
+            this.$doAjax("GET","/api/auth/getlist",(result) => {
+                //console.log(result);
+                result.data.map((item) =>{
+                    this.items.push({
                         hid: item.id,
                         icon: item.name[0],
                         name: item.name,
                         subtitle: "发布于 " + new Date(item.createDate).Format("yyyy-MM-dd HH:mm"),
                     });
-                })
+                });
+                this.$root.load();
             });
         },
         methods:{
@@ -61,10 +60,9 @@
                 this.$router.push({ name: 'detail', params: { hid: hid }})
             },
             signout(){
-                let router = this.$router;
-                this.$doAjax("GET","/api/signout",function (result) {
+                this.$doAjax("GET","/api/signout",(result) => {
                     if (result.ret === 200)
-                        router.push('/signin');
+                        this.$router.push('/signin');
                 });
             }
         }

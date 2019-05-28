@@ -44,16 +44,16 @@
             }
         },
         created(){
-            let items = this.items;
-            this.$doAjax("GET","/api/getlist",function (result) {
-                result.data.map(function(item){
-                    items.push({
+            this.$doAjax("GET","/api/getlist", (result) => {
+                result.data.map((item) => {
+                    this.items.push({
                         hid: item.id,
                         icon: item.name[0],
                         name: item.name,
                         subtitle: item.owner + " - " + item.deadline_format + "截止",
                     });
-                })
+                });
+                this.$root.load();
             });
         }
     }

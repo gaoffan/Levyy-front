@@ -13,6 +13,16 @@
                         </v-card-text>
                     </v-expansion-panel-content>
                 </v-expansion-panel>
+                <v-expansion-panel>
+                    <v-expansion-panel-content>
+                        <template v-slot:header>
+                            <div>别人冒充我提交了作业，现在我不能提交了，怎么办？</div>
+                        </template>
+                        <v-card-text>
+                            请联系作业发布者，他们可以移除提交。
+                        </v-card-text>
+                    </v-expansion-panel-content>
+                </v-expansion-panel>
             </v-card>
         </v-flex>
     </v-layout>

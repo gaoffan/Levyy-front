@@ -14,7 +14,7 @@
                         <v-text-field v-model="fnFormat" label="支持的格式（以英文逗号分割,如:doc,docx）" required></v-text-field>
                         <v-text-field v-model="sLimit" label="应收份数" required></v-text-field>
                         <v-text-field v-model="deadline" label="截止时间（格式如:2019-05-25 20:46）" required></v-text-field>
-                        <v-text-field v-model="fnExample" label="文件名示例" required></v-text-field>
+                        <v-text-field v-model="fnExample" label="用户名（作为文件名）示例（例如：B18030XXX某某）" required></v-text-field>
                         <v-text-field v-model="fnRegExp" label="提交格式限制"></v-text-field>
                     </v-form>
                 </v-card-text>
@@ -46,8 +46,6 @@
         },
         methods:{
             submit(){
-                let router = this.$router;
-                let ret = this.ret;
                 let formData = new FormData();
                 formData.set('name', this.name);
                 formData.set('fnFormat', this.fnFormat);
@@ -56,22 +54,21 @@
                 formData.set('deadline', this.deadline);
                 formData.set('fnRegExp', this.fnRegExp);
                 formData.set('stype', this.fnFormat);
-                this.$doAjax('POST',"/api/auth/newhomework", function (result) {
+                this.$doAjax('POST',"/api/auth/newhomework",(result) => {
                     // console.log(result);
                     if (result.ret === 200)
-                        router.push({ name: 'detail', params: { hid: result.data }});
+                        this.$router.push({ name: 'detail', params: { hid: result.data }});
                     else{
-                        ret.resultText = result.desc;
-                        ret.show = true;
+                        this.ret.resultText = result.desc;
+                        this.ret.show = true;
                     }
                 },formData);
             }
         },
         created() {
-            let router = this.$router;
-            this.$isSignIn(function (result) {
+            this.$isSignIn((result) => {
                 if (result.ret !== 200)
-                    router.push('/signin');
+                    this.$router.push('/signin');
             })
         }
     }

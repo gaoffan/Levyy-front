@@ -69,13 +69,13 @@
                 </v-alert>
                 <v-form>
                     <v-list-tile>
-                        <v-text-field v-model="user" label="你是？" required></v-text-field>
+                        <v-text-field type="text" v-model="user" :label="'你是？（例如：' + hwData.fnExample + '）'" required @input="userChanged"></v-text-field>
                     </v-list-tile>
                     <v-list-tile>
-                        <v-text-field v-model="password" label="密码（确保第二次提交身份相同）" required></v-text-field>
+                        <v-text-field type="text" v-model="password" :label="password_tip" required></v-text-field>
                     </v-list-tile>
                     <v-list-tile>
-                        <div class="upload-box" @click="doUpload">
+                        <div class="upload-box justify-center" @click="doUpload">
                             {{file_info}}
                             <input type="file" style="display: none" id="input_upload" accept="*/*" ref="input" @change="inputChanged">
                         </div>
@@ -93,15 +93,19 @@
                             <div>已提交</div>
                         </template>
                         <v-card>
-                            <v-list dense>
+                            <v-list dense v-if="isMine">
                                 <v-list-tile v-for="(item,index) in hwData.submitted" :key="index">
                                     <v-list-tile-content>{{item.name}}</v-list-tile-content>
                                     <v-list-tile-content class="align-end">{{item.time}}</v-list-tile-content>
+                                    <v-btn flat color="red" @click="removeSubmission(item)">删除提交</v-btn>
                                 </v-list-tile>
                                 <v-list-tile v-if="hwData.submitted.length === 0">
                                     <v-list-tile-content class="align-center">当第一个提交的人吧～</v-list-tile-content>
                                 </v-list-tile>
                             </v-list>
+                            <v-card-text v-if="!isMine">
+                                只有作业的发布者才能看到已经提交作业的人哦～
+                            </v-card-text>
                         </v-card>
                     </v-expansion-panel-content>
                 </v-expansion-panel>
@@ -119,20 +123,22 @@
                 password: "",
                 hwData: {
                     name:"",
-                    createDate: new Date(),
-                    deadline: new Date(),
+                    createDate: null,
+                    deadline: null,
                     sLimit:0,
                     owner:"",
                     format:"",
                     deadline_format:null,
                     count:0,
+                    fnExample:"",
                     submitted:[]
                 },
                 isMine:false,
                 file_info:"拖动文件到页面或点击这里选择文件",
+                password_tip:"密码",
                 ret: {
                     show :false,
-                    type: "",
+                    type: "error",
                     color: "",
                     resultText: ""
                 }
@@ -140,21 +146,35 @@
         },
         props: ['hid'],
         methods:{
+            showInfo(text,color = "red",type = "error"){
+                this.ret.show = true;
+                this.ret.resultText = text;
+                this.ret.color = color;
+                this.ret.type = type;
+            },
             back(){
                 this.$router.go(-1);
             },
+            userChanged(){
+                this.$doAjax("GET","/api/getsubmitted?hid=" + this.hid + "&user=" + this.user, (result) => {
+                    this.$nextTick(() =>
+                        this.password_tip = result.ret === 200 && !result.data ?
+                            "请设置一个密码，作为「下次提交」和「下载已提交文件」的凭据" :  "请输入你上次提交时设置的密码");
+                });
+            },
             submit(){
-                let ret = this.ret;
                 let formData = new FormData();
                 formData.set('hid', this.hid);
                 formData.set('user', this.user);
                 formData.set('password', this.password);
-                formData.set('file', document.getElementById("input_upload").files[0], document.getElementById("input_upload").files[0].name);
-                this.$doAjax("POST","/api/submit", function (result) {
-                    ret.show = true;
-                    ret.resultText = result.desc;
-                    ret.color = result.ret === 200 ? "green" : "red";
-                    ret.type = result.ret === 200 ? "success" : "error";
+                let files = document.getElementById("input_upload").files;
+                if(files.length === 0){
+                    this.showInfo("请不要皮这个系统（没有选择文件）","orange","warning");
+                    return;
+                }
+                formData.set('file', [0], document.getElementById("input_upload").files[0].name);
+                this.$doAjax("POST","/api/submit", (result) => {
+                    this.showInfo(result.desc, result.ret === 200 ? "green" : "red", result.ret === 200 ? "success" : "error");
                 }, formData);
             },
             downloadMe(){
@@ -167,15 +187,18 @@
 
             },
             del(){
-                let router = this.$router;
-                this.$doAjax("GET","/api/auth/deletehomework?hid=" + this.hid, function (result) {
-                    // console.log(result);
+                this.$doAjax("GET","/api/auth/deletehomework?hid=" + this.hid,(result) => {
                     if (result.ret === 200)
-                        router.push('/admin');
+                        this.$router.push('/admin');
                 });
             },
             downloadAll(){
-                location.href = this.$CONFIG.apiUrl + "/api/auth/download?hid=" + this.hid;
+                location.href = this.$CONFIG.apiUrl + "/api/auth/downloadall?hid=" + this.hid;
+            },
+            removeSubmission(item){
+                this.$doAjax("POST","/api/auth/removesubmission", (result) => {
+                    // TODO
+                });
             },
             doUpload(){
                 document.getElementById('input_upload').click()
@@ -197,6 +220,7 @@
                     hwd.format = result.format;
                     hwd.createDate = new Date(result.createDate).Format("yyyy-MM-dd HH:mm");
                     hwd.count = result.count;
+                    hwd.fnExample = result.fnExample;
                     hwd.deadline_format = result.deadline_format;
                     // console.log(result.submitted);
                     result.submitted.map(function (item) {
