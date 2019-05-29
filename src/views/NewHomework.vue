@@ -15,7 +15,7 @@
                         <v-text-field v-model="sLimit" label="应收份数" required></v-text-field>
                         <v-text-field v-model="deadline" label="截止时间（格式如:2019-05-25） (注意是当天0点)" required></v-text-field>
                         <v-text-field v-model="fnExample" label="用户名（作为文件名）示例（例如：B18030XXX某某）" required></v-text-field>
-                        <v-text-field v-model="fnFormat" label="正则表达式用户名限制（示例^B1803XX\d\d[\u4e00-\u9fa5]+）"></v-text-field>
+                        <v-text-field v-model="fnFormat" label="正则表达式用户名限制（示例^B1803XX\d\d[\u4e00-\u9fa5]+） 可以不写"></v-text-field>
                     </v-form>
                 </v-card-text>
                 <v-card-actions>

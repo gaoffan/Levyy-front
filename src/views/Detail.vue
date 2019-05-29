@@ -8,9 +8,9 @@
                             <v-icon>chevron_left</v-icon>
                         </v-btn>
                         <v-spacer></v-spacer>
-                        <v-btn v-show="isMine" color="orange" dark @click="edit">
-                            <v-icon>edit</v-icon>编辑
-                        </v-btn>
+<!--                        <v-btn v-show="isMine" color="orange" dark @click="edit">-->
+<!--                            <v-icon>edit</v-icon>编辑-->
+<!--                        </v-btn>-->
                         <v-btn v-show="isMine" color="red" dark @click="del">
                             <v-icon>delete</v-icon>删除
                         </v-btn>
@@ -190,9 +190,6 @@
             inputChanged(){
                 this.file_info = document.getElementById('input_upload').files[0].name;
             },
-            edit(){
-
-            },
             del(){
                 this.$doAjax("GET","/api/auth/deletehomework?hid=" + this.hid,(result) => {
                     if (result.ret === 200)
@@ -204,7 +201,7 @@
             },
             removeSubmission(index){
                 this.$doAjax("POST","/api/auth/removesubmission?hid=" + this.hid + "&user=" + this.hwData.submitted[index].name, (result) => {
-                    console.log(result);
+                    // console.log(result);
                     if (result.ret === 200){
                         this.hwData.submitted.splice(index,1);
                     }
