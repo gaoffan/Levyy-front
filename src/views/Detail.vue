@@ -97,7 +97,7 @@
                                 <v-list-tile v-for="(item,index) in hwData.submitted" :key="index">
                                     <v-list-tile-content>{{item.name}}</v-list-tile-content>
                                     <v-list-tile-content class="align-end">{{item.time}}</v-list-tile-content>
-                                    <v-btn flat color="red" @click="removeSubmission(item)">删除提交</v-btn>
+                                    <v-btn flat color="red" @click="removeSubmission(index)">删除提交</v-btn>
                                 </v-list-tile>
                                 <v-list-tile v-if="hwData.submitted.length === 0">
                                     <v-list-tile-content class="align-center">当第一个提交的人吧～</v-list-tile-content>
@@ -181,8 +181,10 @@
                 this.$doAjax("POST","/api/candownloadsubmission?hid=" + this.hid + "&user=" + this.user + "&password=" + this.password, (result) => {
                     if (result.ret !== 200)
                         this.showInfo(result.desc);
-                    else
+                    else{
+                        this.showInfo("成功！","green","success");
                         location.href = this.$CONFIG.apiUrl +  "/api/downloadsubmission?hid=" + this.hid + "&user="+ this.user + "&password=" + this.password;
+                    }
                 });
             },
             inputChanged(){
@@ -200,9 +202,12 @@
             downloadAll(){
                 location.href = this.$CONFIG.apiUrl + "/api/auth/downloadall?hid=" + this.hid;
             },
-            removeSubmission(item){
-                this.$doAjax("POST","/api/auth/removesubmission", (result) => {
-                    // TODO
+            removeSubmission(index){
+                this.$doAjax("POST","/api/auth/removesubmission?hid=" + this.hid + "&user=" + this.hwData.submitted[index].name, (result) => {
+                    console.log(result);
+                    if (result.ret === 200){
+                        this.hwData.submitted.splice(index,1);
+                    }
                 });
             },
             doUpload(){

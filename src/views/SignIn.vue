@@ -1,6 +1,6 @@
 <template>
     <v-layout row align-center justify-center>
-        <v-flex xs12 sm10 md6 lg5 xl4>
+        <v-flex xs12 sm8 md5 lg4 xl3>
             <v-card>
                 <v-alert :value="ret.show" type="error" color="red">
                     {{ ret.resultText }}
