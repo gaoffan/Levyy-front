@@ -69,7 +69,7 @@
                 </v-alert>
                 <v-form>
                     <v-list-tile>
-                        <v-text-field type="text" v-model="user" :label="'你是？（例如：' + hwData.fnExample + '）'" required @input="userChanged"></v-text-field>
+                        <v-text-field type="text" v-model="user" :label="'君の名は/你是？（例如：' + hwData.fnExample + '）'" required @input="userChanged"></v-text-field>
                     </v-list-tile>
                     <v-list-tile>
                         <v-text-field type="text" v-model="password" :label="password_tip" required></v-text-field>

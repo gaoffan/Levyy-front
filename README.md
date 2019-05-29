@@ -1,5 +1,5 @@
-# Levy-front
-Levy | 一个交电子版作业的平台
+# Levyy-front
+Levyy | 一个交电子版作业的平台
 
 ## Project setup
 ```

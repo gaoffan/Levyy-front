@@ -43,7 +43,7 @@
                     this.$router.push('/signin');
             });
             this.$doAjax("GET","/api/auth/getlist",(result) => {
-                //console.log(result);
+                if (result.data)
                 result.data.map((item) =>{
                     this.items.push({
                         hid: item.id,
@@ -52,7 +52,6 @@
                         subtitle: "发布于 " + new Date(item.createDate).Format("yyyy-MM-dd HH:mm"),
                     });
                 });
-                this.$root.load();
             });
         },
         methods:{
@@ -61,8 +60,9 @@
             },
             signout(){
                 this.$doAjax("GET","/api/signout",(result) => {
-                    if (result.ret === 200)
+                    if (result.ret === 200){
                         this.$router.push('/signin');
+                    }
                 });
             }
         }

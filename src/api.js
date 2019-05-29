@@ -1,7 +1,9 @@
 export const CONFIG = {
+    apiUrl: "http://127.0.0.1:8080"
+};
+export const CONFIG_Release = {
     apiUrl: "/homeworkupload"
 };
-
 Date.prototype.Format = function(fmt)
 { //author: meizz
     let o = {

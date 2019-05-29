@@ -6,7 +6,7 @@
                     {{ ret.resultText }}
                 </v-alert>
                 <v-toolbar dark color="#64B5F6">
-                    <v-toolbar-title>登录到 Levy</v-toolbar-title>
+                    <v-toolbar-title>登录到 Levyy</v-toolbar-title>
                 </v-toolbar>
                 <v-card-text>
                     <v-form id="form">
@@ -38,26 +38,24 @@
         },
         methods:{
             login(){
-                let router = this.$router;
-                let ret = this.ret;
                 let formData = new FormData();
                 formData.set('userName', this.userName);
                 formData.set('password', this.password);
-                this.$doAjax('POST',"/api/signin", function (result) {
-                    if (result.ret === 200)
-                        router.go(-1);
+                this.$doAjax('POST',"/api/signin", (result) => {
+                    if (result.ret === 200){
+                        this.$router.go(-1);
+                    }
                     else{
-                        ret.resultText = result.desc;
-                        ret.show = true;
+                        this.ret.resultText = result.desc;
+                        this.ret.show = true;
                     }
                 }, formData);
             }
         },
         created(){
-            let router = this.$router;
-            this.$isSignIn(function (result) {
+            this.$isSignIn((result) => {
                 if (result.ret !== 1999)
-                    router.push('/');
+                    this.$router.push('/');
             });
         }
     }

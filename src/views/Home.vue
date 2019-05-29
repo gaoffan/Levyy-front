@@ -53,7 +53,6 @@
                         subtitle: item.owner + " - " + item.deadline_format + "截止",
                     });
                 });
-                this.$root.load();
             });
         }
     }
