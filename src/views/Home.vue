@@ -24,7 +24,7 @@
                 </v-card>
             </v-flex>
         </v-layout>
-        <FAQ></FAQ>
+<!--        <FAQ></FAQ>-->
     </div>
 </template>
 
