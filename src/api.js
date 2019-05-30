@@ -1,7 +1,7 @@
-export const CONFIG = {
+export const CONFIG_DBG = {
     apiUrl: "http://127.0.0.1:8080"
 };
-export const CONFIG_Release = {
+export const CONFIG = {
     apiUrl: "/homeworkupload"
 };
 Date.prototype.Format = function(fmt)
