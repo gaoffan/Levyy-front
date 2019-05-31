@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-layout row align-center justify-center>
+        <v-layout v-if="load" row align-center justify-center>
             <v-flex xs12 sm10 md6 lg5 xl4>
                 <v-card>
                     <v-list two-line subheader>
@@ -29,21 +29,23 @@
 </template>
 
 <script>
-    import FAQ from '@/components/FAQ.vue'
+    //import FAQ from '@/components/FAQ.vue'
     export default {
         name: 'home',
         data(){
             return {
+                load:false,
                 items: []
             }
         },
-        components: {FAQ},
+        components: {},
         methods:{
             viewHomework(hid){
                 this.$router.push({ name: 'detail', params: { hid: hid }})
             }
         },
         created(){
+            this.$root.loading();
             this.$doAjax("GET","/api/getlist", (result) => {
                 result.data.map((item) => {
                     this.items.push({
@@ -53,6 +55,8 @@
                         subtitle: item.owner + " - " + item.deadline_format + "截止",
                     });
                 });
+                this.$root.loaded();
+                this.$nextTick(()=>this.load = true);
             });
         }
     }

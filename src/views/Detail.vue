@@ -1,5 +1,5 @@
 <template>
-    <v-layout row align-center justify-center>
+    <v-layout v-if="load" row align-center justify-center>
         <v-flex xs12 sm10 md6 lg5 xl4>
             <v-card>
                 <v-layout column>
@@ -61,7 +61,13 @@
                             <v-list-tile-sub-title>已收/应收</v-list-tile-sub-title>
                         </v-list-tile-content>
                     </v-list-tile>
+<!--                    <v-list-tile>-->
+<!--                        <v-list-tile-content>-->
+<!--                            <v-list-tile-title>TODO 这里加一行作业描述</v-list-tile-title>-->
+<!--                        </v-list-tile-content>-->
+<!--                    </v-list-tile>-->
                 </v-list>
+
                 <v-divider></v-divider>
                 <v-subheader>提交作业</v-subheader>
                 <v-alert style="margin-bottom: 1rem;" :value="ret.show" :type="ret.type" :color="ret.color">
@@ -77,7 +83,7 @@
                     <v-list-tile>
                         <div class="upload-box justify-center" @click="doUpload">
                             {{file_info}}
-                            <input type="file" style="display: none" id="input_upload" accept="*/*" ref="input" @change="inputChanged">
+                            <input ref="file" type="file" style="display: none" id="input_upload" accept="*/*" @change="inputChanged">
                         </div>
                     </v-list-tile>
                 </v-form>
@@ -97,6 +103,7 @@
                                 <v-list-tile v-for="(item,index) in hwData.submitted" :key="index">
                                     <v-list-tile-content>{{item.name}}</v-list-tile-content>
                                     <v-list-tile-content class="align-end">{{item.time}}</v-list-tile-content>
+                                    <v-btn flat color="green" @click="download(index)">单独下载</v-btn>
                                     <v-btn flat color="red" @click="removeSubmission(index)">删除提交</v-btn>
                                 </v-list-tile>
                                 <v-list-tile v-if="hwData.submitted.length === 0">
@@ -119,23 +126,25 @@
         name: 'detail',
         data(){
             return {
-                user: "",
-                password: "",
+                load:false,
+                user: null,
+                password: null,
+                file: undefined,
                 hwData: {
-                    name:"",
+                    name:null,
                     createDate: null,
                     deadline: null,
                     sLimit:0,
-                    owner:"",
-                    format:"",
+                    owner:null,
+                    format:null,
                     deadline_format:null,
                     count:0,
-                    fnExample:"",
+                    fnExample:null,
                     submitted:[]
                 },
                 isMine:false,
                 file_info:"拖动文件到页面或点击这里选择文件",
-                password_tip:"密码",
+                password_tip:"密令",
                 ret: {
                     show :false,
                     type: "error",
@@ -145,6 +154,11 @@
             }
         },
         props: ['hid'],
+        watch:{
+            file: function (val) {
+                this.file_info = val.name;
+            }
+        },
         methods:{
             showInfo(text,color = "red",type = "error"){
                 this.ret.show = true;
@@ -159,7 +173,7 @@
                 this.$doAjax("GET","/api/getsubmitted?hid=" + this.hid + "&user=" + this.user, (result) => {
                     this.$nextTick(() =>
                         this.password_tip = result.ret === 200 && !result.data ?
-                            "请设置一个密码，作为「下次提交」和「下载已提交文件」的凭据" :  "请输入你上次提交时设置的密码");
+                            "请设置一个密令，作为「下次提交」和「下载已提交文件」的凭据" :  "请输入你上次提交时设置的密令");
                 });
             },
             submit(){
@@ -167,12 +181,13 @@
                 formData.set('hid', this.hid);
                 formData.set('user', this.user);
                 formData.set('password', this.password);
-                let files = document.getElementById("input_upload").files;
-                if(files.length === 0){
+                //console.log(this.file);
+                //console.log(document.getElementById("input_upload").files[0]);
+                if(!this.file){
                     this.showInfo("请不要皮这个系统（没有选择文件）","orange","warning");
                     return;
                 }
-                formData.set('file', files[0], files[0].name);
+                formData.set('file', this.file, this.file.name);
                 this.$doAjax("POST","/api/submit", (result) => {
                     this.showInfo(result.desc, result.ret === 200 ? "green" : "red", result.ret === 200 ? "success" : "error");
                 }, formData);
@@ -188,7 +203,7 @@
                 });
             },
             inputChanged(){
-                this.file_info = document.getElementById('input_upload').files[0].name;
+                this.file = this.$refs.file.files[0];
             },
             del(){
                 this.$doAjax("GET","/api/auth/deletehomework?hid=" + this.hid,(result) => {
@@ -207,6 +222,9 @@
                     }
                 });
             },
+            download(index){
+                location.href = this.$CONFIG.apiUrl + "/api/auth/downloadusersubmission?hid=" + this.hid + "&user=" + this.hwData.submitted[index].name;
+            },
             doUpload(){
                 document.getElementById('input_upload').click()
             },
@@ -215,6 +233,7 @@
             }
         },
         created(){
+            this.$root.loading();
             this.$doAjax("GET","/api/get/" + this.hid, (result) => {
                 if (result.ret === 200){
                     result = result.data;
@@ -234,12 +253,22 @@
                                 time:new Date(item.time).Format("yyyy-MM-dd HH:mm")
                             });
                     });
+                    this.$doAjax("GET","/api/auth/ismyhomework?hid=" + this.hid, (result) => {
+                        if (result.ret === 200 && result.data)
+                            this.show();
+                        this.$root.loaded();
+                        this.$nextTick(()=>this.load = true);
+                    });
                 }
             });
-            this.$doAjax("GET","/api/auth/ismyhomework?hid=" + this.hid, (result) => {
-                if (result.ret === 200 && result.data)
-                    this.show();
-            });
+
+            window.addEventListener('dragover',(e) => {
+                e.preventDefault();
+            },false);
+            window.addEventListener('drop',(e) => {
+                e.preventDefault();
+                this.file = e.dataTransfer.files[0];
+            },false);
         }
     }
 </script>

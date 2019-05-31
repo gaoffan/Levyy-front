@@ -15,6 +15,7 @@
                     </v-form>
                 </v-card-text>
                 <v-card-actions>
+                    <v-btn dark color="orange" to="/signup">注册为管理员</v-btn>
                     <v-spacer></v-spacer>
                     <v-btn dark color="red" @click="login">登录</v-btn>
                 </v-card-actions>
@@ -53,6 +54,7 @@
             }
         },
         created(){
+            this.$root.loaded();
             this.$isSignIn((result) => {
                 if (result.ret !== 1999)
                     this.$router.push('/');
