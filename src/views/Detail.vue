@@ -70,6 +70,7 @@
 
                 <v-divider></v-divider>
                 <v-subheader>提交作业</v-subheader>
+                <v-progress-linear v-if="uploading" :indeterminate="true" color="red" style="margin-top: 0"></v-progress-linear>
                 <v-alert style="margin-bottom: 1rem;" :value="ret.show" :type="ret.type" :color="ret.color">
                     {{ ret.resultText }}
                 </v-alert>
@@ -127,6 +128,7 @@
         data(){
             return {
                 load:false,
+                uploading:false,
                 user: null,
                 password: null,
                 file: undefined,
@@ -187,13 +189,17 @@
                     this.showInfo("请不要皮这个系统（没有选择文件）","orange","warning");
                     return;
                 }
+                this.$nextTick(()=>this.uploading = true);
                 formData.set('file', this.file, this.file.name);
                 this.$doAjax("POST","/api/submit", (result) => {
                     this.showInfo(result.desc, result.ret === 200 ? "green" : "red", result.ret === 200 ? "success" : "error");
+                    this.$nextTick(()=>this.uploading = false);
                 }, formData);
             },
             downloadMe(){
-                this.$doAjax("POST","/api/candownloadsubmission?hid=" + this.hid + "&user=" + this.user + "&password=" + this.password, (result) => {
+                this.$nextTick(()=>this.uploading = true);
+                this.$doAjax("GET","/api/candownloadsubmission?hid=" + this.hid + "&user=" + this.user + "&password=" + this.password, (result) => {
+                    this.$nextTick(()=>this.uploading = false);
                     if (result.ret !== 200)
                         this.showInfo(result.desc);
                     else{
